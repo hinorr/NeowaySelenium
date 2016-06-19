@@ -1,0 +1,129 @@
+package TST_CadastrarFormulario;
+
+
+import java.util.concurrent.TimeUnit;
+
+import org.junit.*;
+
+import static org.junit.Assert.*;
+
+import org.openqa.selenium.*;
+import org.openqa.selenium.firefox.FirefoxDriver;
+
+import br.com.neoway.arquivo.debug.LogDebug;
+import br.com.neoway.arquivo.test.result.LogTestResult;
+import br.com.neoway.auxiliar.Login;
+import br.com.neoway.entidades.Formulario;;
+
+
+public class TST_CadastrarFormulario {
+
+	
+	private WebDriver driver;
+	private String baseUrl;	
+	private StringBuffer verificationErrors = new StringBuffer();
+	
+	private Formulario formulario;
+	
+		
+	
+	@Before
+	public void setUp() throws Exception {		
+		
+		this.login = new Login();
+		//this.loggerDebug = new LogDebug(this.getClass());
+		//this.loggerTestResult = new LogTestResult(this.getClass());
+		this.formulario = new Formulario();
+		
+		
+		this.driver = new FirefoxDriver();
+		this.baseUrl = "http://teste.vaga-qa.paripassudev.com/";
+		this.driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+		this.driver.get(baseUrl);
+    
+	}
+
+	
+	@Test
+	public void cadastrarAvaliado() throws Exception {
+		
+		driver = new FirefoxDriver();
+		baseUrl = "http://restchallenge-neoautomation.rhcloud.com";
+		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+		driver.get(baseUrl);
+
+		loggerDebug.debug("Teste Iniciado");
+		    
+		try{
+			
+			driver = login.executaLogin();
+			
+			/*
+			 * Selecão do Menu Avaliados
+			 * Pode-se utilizar o modelo abaixo, utilizando o xpath.
+			 * driver.findElement(By.xpath("//*[@id=\"navigation\"]/ul/li[3]/a")).click();
+			 */
+			driver.findElement(By.linkText("Avaliados")).click();	
+			
+			//Seleção do submenu "Novo Avaliado"
+			driver.findElement(By.linkText("Novo avaliado")).click();	
+									
+			Thread.sleep(2000);
+
+			//Inserção do Nome
+			driver.findElement(By.name("avaliadoNome")).sendKeys(formulario.getFirtName());
+			//Seleção do botão Salvar
+			driver.findElement(By.linkText("Salvar")).click();	
+			
+			Thread.sleep(2000);						
+			
+			//Capturando a mensagem de validação após o submit
+			String msgRetornadaInterface = driver.findElement(By.tagName("article")).getText();
+			String msgEsperada = "Avaliado salvo com sucesso";
+		
+			try{
+				
+				//Validação da mensagem
+				assertEquals(msgEsperada, msgRetornadaInterface);	    
+				loggerTestResult.testResult("Aprovado");
+				
+			}catch (AssertionError erroValidaMensagemCadastroDeAvaliado){
+    		
+				loggerDebug.debug("Erro ao Executar o caso de Teste: " + erroValidaMensagemCadastroDeAvaliado);
+    			loggerTestResult.testResult("Reprovado");
+    			
+    			//Avisa a api junit sobre o erro no caso de teste
+    			throw erroValidaMensagemCadastroDeAvaliado;
+			
+    		}finally{
+    
+    			loggerDebug.debug("Teste Finalizado");
+			
+			}
+			
+		}catch(Exception erro){
+			
+			loggerDebug.debug("Erro ao Executar o cado de Teste: " + erro);
+			loggerTestResult.testResult("Reprovado");
+			loggerDebug.debug("Teste Finalizado");
+			
+			//Avisa a api junit sobre o erro no caso de teste
+			throw erro;
+			
+		}
+	}
+	
+
+	@After
+	public void tearDown() throws Exception {
+		
+		driver.quit();
+		String verificationErrorString = verificationErrors.toString();
+		
+		if (!"".equals(verificationErrorString)) {
+			
+			fail(verificationErrorString);
+		}
+	}
+	
+}
