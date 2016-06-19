@@ -20,8 +20,10 @@ public class TST_CadastrarFormulario {
 	private WebDriver driver;
 	private String baseUrl;	
 	private StringBuffer verificationErrors = new StringBuffer();
+	
 	private Formulario formulario;
 	
+		
 	
 	@Before
 	public void setUp() throws Exception {	
@@ -68,7 +70,8 @@ public class TST_CadastrarFormulario {
 				System.out.println("Aprovado");
 				
 			}catch (AssertionError erroValidaMensagemCadastroDeAvaliado){
-    				
+    		
+			
 				System.out.println("Reprovado");
     			throw erroValidaMensagemCadastroDeAvaliado;
 			
